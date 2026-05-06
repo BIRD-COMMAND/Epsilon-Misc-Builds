@@ -12,8 +12,8 @@ namespace BitmapViewerPlugin
     class BitmapExtractionHelper
     {
         private readonly ICacheFile _cacheFile;
-        private readonly Bitmap _bitmapGroup;
-        private readonly BitmapGen2 _bitmapGroupGen2;
+        private Bitmap _bitmapGroup;
+        private BitmapGen2 _bitmapGroupGen2;
         private readonly CachedTag _tag;
 
         public BitmapExtractionHelper(ICacheFile cacheFile, CachedTag instance, Bitmap definition)
@@ -80,7 +80,12 @@ namespace BitmapViewerPlugin
             return mipmapData;
         }
 
-        public class ExtractedBitmap
+		public void UpdateDefinition(object definition) {
+            if (definition is Bitmap) { _bitmapGroup = (Bitmap)definition; }
+            if (definition is BitmapGen2) { _bitmapGroupGen2 = (BitmapGen2)definition; }
+		}
+
+		public class ExtractedBitmap
         {
             public BaseBitmap BaseBitmap;
             public byte[] MipData;

@@ -1,7 +1,9 @@
 ﻿using CacheEditor;
 using CacheEditor.TagEditing;
+using CacheEditor.TagEditing.Messages;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -253,7 +255,28 @@ namespace BitmapViewerPlugin
             MipLevels = new ObservableCollection<string>(Enumerable.Range(0, mipLevelCount).Select((_, i) => $"Level: {i}"));
         }
 
-        private string FormatResourceSize(float length)
+		protected override void OnMessage(object sender, object message) {
+			if (message is DefinitionDataChangedEvent e) {
+                // Debug.WriteLine($"{nameof(BitmapViewerViewModel)}.OnMessage DefinitionDataChangedEvent");
+                if (e.NewData is Bitmap newDefinition) {
+					// Debug.WriteLine($"{nameof(BitmapViewerViewModel)}.OnMessage NEW DEF");
+					_cachedBaseBitmap = null;  // invalidate cache — definition metadata may have changed  
+                    _bitmapExtractor.UpdateDefinition(newDefinition);
+					PopulateBitmapList(newDefinition);
+					LoadBitmapInBackground();
+				}
+                else if (e.NewData is BitmapGen2 newDefinitionGen2) {
+					// Debug.WriteLine($"{nameof(BitmapViewerViewModel)}.OnMessage NEW DEF GEN 2");
+					_cachedBaseBitmap = null;  // invalidate cache — definition metadata may have changed  
+					_bitmapExtractor.UpdateDefinition(newDefinitionGen2);
+					PopulateBitmapList(newDefinitionGen2);
+					LoadBitmapInBackground();
+				}
+                else { return; }
+			}
+		}
+
+		private string FormatResourceSize(float length)
         {
             string units;
 
