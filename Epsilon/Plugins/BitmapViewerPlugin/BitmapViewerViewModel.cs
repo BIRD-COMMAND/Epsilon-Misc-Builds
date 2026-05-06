@@ -45,7 +45,9 @@ namespace BitmapViewerPlugin
         private static bool _channelG = true;
         private static bool _channelB = true;
 
-        public BitmapViewerViewModel(ICacheFile cacheFile, CachedTag instance, Bitmap definition)
+        public string CurrentBitmapDisplayName => _bitmapExtractor?.DisplayName ?? "";
+
+		public BitmapViewerViewModel(ICacheFile cacheFile, CachedTag instance, Bitmap definition)
         {
             _bitmapExtractor = new BitmapExtractionHelper(cacheFile, instance, definition);
 
@@ -307,5 +309,5 @@ namespace BitmapViewerPlugin
         {
             Bitmaps = new ObservableCollection<string>(Enumerable.Range(0, definition.Bitmaps.Count).Select((_, i) => $"Bitmap: {i}"));
         }
-    }
+	}
 }

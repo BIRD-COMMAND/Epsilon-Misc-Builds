@@ -62,7 +62,13 @@
                 <Border BorderThickness="1" BorderBrush="Black">
                     <local:ZoomBorder x:Name="ZoomControl" ClipToBounds="True" Background="{StaticResource Checkers}">
                         <Image ClipToBounds="True" x:Name="_image" Source="{Binding DisplayBitmap}"
-                            RenderOptions.BitmapScalingMode="NearestNeighbor" ></Image>
+                            RenderOptions.BitmapScalingMode="NearestNeighbor">
+                            <Image.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Save to Bitmap Previews Folder" Click="SaveBitmap_Click"/>
+                                </ContextMenu>
+                            </Image.ContextMenu>
+                        </Image>
                         <local:ZoomBorder.Style>
                             <Style>
                                 <Setter Property="FrameworkElement.Visibility" Value="Hidden" />

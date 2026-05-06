@@ -30,6 +30,8 @@ namespace Epsilon.Options
         private bool _defaultCachePathIsValid;
         private string _defaultPakPath;
         private bool _defaultPakPathIsValid;
+        private string _bitmapPreviewSavePath;
+        private bool _bitmapPreviewSaveIsValid;
         private string _startupPositionLeft;
         private string _startupPositionTop;
         private string _startupWidth;
@@ -39,8 +41,9 @@ namespace Epsilon.Options
 
         private string _defaultCacheShort;
         private string _defaultPakShort;
+        private string _bitmapPreviewSaveShort;
 
-        private string _accentColorHex;
+		private string _accentColorHex;
         private Theme _theme;
 
         [ImportingConstructor]
@@ -90,7 +93,11 @@ namespace Epsilon.Options
             });
         }
 
-        public void RevertAppearance()
+        private void UpdateBitmapPreviewSavePath(string path) {
+            Application.Current.Resources["BitmapPreviewSavePath"] = path;
+		}
+
+		public void RevertAppearance()
         {
             string og_accent = _settings.Get(GeneralSettings.AccentColorSetting.Key, "#007ACC");
             Theme og_theme = _settings.Get(GeneralSettings.ThemeSetting.Key, Theme.Default);
@@ -141,7 +148,7 @@ namespace Epsilon.Options
             set => SetOptionAndNotify(ref _defaultPakShort, value);
         }
 
-        public bool PakPathIsValid
+		public bool PakPathIsValid
         {
             get
             {
@@ -151,7 +158,29 @@ namespace Epsilon.Options
             set => SetOptionAndNotify(ref _defaultCachePathIsValid, value);
         }
 
-        public string StartupPositionLeft
+        public string BitmapPreviewSavePath {
+			get => _bitmapPreviewSavePath;
+			set {
+				SetOptionAndNotify(ref _bitmapPreviewSavePath, value);
+				_bitmapPreviewSaveShort = ShortenPath(value);
+                UpdateBitmapPreviewSavePath(value);
+			}
+		}
+
+        public string BitmapPreviewSaveShort {
+			get => _bitmapPreviewSaveShort;
+			set => SetOptionAndNotify(ref _bitmapPreviewSaveShort, value);
+		}
+
+        public bool BitmapPreviewSaveIsValid {
+			get {
+				_bitmapPreviewSaveIsValid = ( Directory.Exists(@_bitmapPreviewSavePath) || @_bitmapPreviewSavePath == "" );
+				return _bitmapPreviewSaveIsValid;
+			}
+			set => SetOptionAndNotify(ref _bitmapPreviewSaveIsValid, value);
+		}
+
+		public string StartupPositionLeft
         {
             get => _startupPositionLeft;
             set => SetOptionAndNotify(ref _startupPositionLeft, value);
@@ -193,8 +222,12 @@ namespace Epsilon.Options
                 _settings.Set(GeneralSettings.DefaultTagCacheSetting.Key, DefaultCachePath);
             if (PakPathIsValid)
                 _settings.Set(GeneralSettings.DefaultPakSetting.Key, DefaultPakPath);
+            if (BitmapPreviewSaveIsValid) {
+                _settings.Set(GeneralSettings.BitmapPreviewSavePathSetting.Key, BitmapPreviewSavePath);
+                Application.Current.Resources["BitmapPreviewSavePath"] = BitmapPreviewSavePath;
+			}
 
-            _settings.Set(GeneralSettings.StartupPositionLeftSetting.Key, StartupPositionLeft);
+			_settings.Set(GeneralSettings.StartupPositionLeftSetting.Key, StartupPositionLeft);
             _settings.Set(GeneralSettings.StartupPositionTopSetting.Key, StartupPositionTop);
 
             _settings.Set(GeneralSettings.StartupWidthSetting.Key, StartupWidth);
@@ -213,7 +246,9 @@ namespace Epsilon.Options
         {
             DefaultCachePath = _settings.Get(GeneralSettings.DefaultTagCacheSetting.Key, "");
             DefaultPakPath = _settings.Get(GeneralSettings.DefaultPakSetting.Key, "");
-            StartupPositionLeft = _settings.Get(GeneralSettings.StartupPositionLeftSetting.Key, "");
+			BitmapPreviewSavePath = _settings.Get(GeneralSettings.BitmapPreviewSavePathSetting.Key, 
+                Application.Current.Resources["BitmapPreviewSavePath"] as string ?? "");
+			StartupPositionLeft = _settings.Get(GeneralSettings.StartupPositionLeftSetting.Key, "");
             StartupPositionTop = _settings.Get(GeneralSettings.StartupPositionTopSetting.Key, "");
             StartupWidth = _settings.Get(GeneralSettings.StartupWidthSetting.Key, "");
             StartupHeight = _settings.Get(GeneralSettings.StartupHeightSetting.Key, "");

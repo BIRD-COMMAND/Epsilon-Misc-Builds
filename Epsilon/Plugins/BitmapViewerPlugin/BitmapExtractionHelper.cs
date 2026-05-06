@@ -30,7 +30,9 @@ namespace BitmapViewerPlugin
             _bitmapGroupGen2 = definition;
         }
 
-        public ExtractedBitmap GetBitmapData(BaseBitmap baseBitmap, int bitmapIndex, int layerIndex, int mipLevel)
+        public string DisplayName => _tag.Name;
+
+		public ExtractedBitmap GetBitmapData(BaseBitmap baseBitmap, int bitmapIndex, int layerIndex, int mipLevel)
         {
             if (baseBitmap == null)
             {

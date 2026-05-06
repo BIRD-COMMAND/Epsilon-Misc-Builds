@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.Composition;
-using System.Diagnostics;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace BitmapViewerPlugin
 {
@@ -22,7 +23,39 @@ namespace BitmapViewerPlugin
             InitializeComponent();
         }
 
-        private void Image_MouseMove(object sender, MouseEventArgs e)
+		private void SaveBitmap_Click(object sender, RoutedEventArgs e) {
+			
+            BitmapViewerViewModel viewModel = DataContext as BitmapViewerViewModel;
+            
+            if (viewModel?.DisplayBitmap == null) {
+                return;
+            }
+				
+			BitmapSource extractedBitmap = viewModel.DisplayBitmap;
+
+			string outputFolder = 
+                Application.Current.Resources["BitmapPreviewSavePath"] as string 
+                ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            char[] displayNameChars = (viewModel?.CurrentBitmapDisplayName ?? "").ToCharArray();
+
+            for (int i = 0; i < displayNameChars.Length; i++) {
+				if (Path.GetInvalidFileNameChars().Contains(displayNameChars[i])) {
+					displayNameChars[i] = '_';
+				}
+			}
+
+			string outputPath = Path.Combine(outputFolder, $"{new string(displayNameChars)}_{DateTime.Now.Ticks}.png");
+
+			using (FileStream fileStream = new FileStream(outputPath, FileMode.Create)) {
+				BitmapEncoder encoder = new PngBitmapEncoder();
+				encoder.Frames.Add(BitmapFrame.Create(extractedBitmap));
+				encoder.Save(fileStream);
+			}
+
+		}
+
+		private void Image_MouseMove(object sender, MouseEventArgs e)
         {
             var bitmapImage = (BitmapSource)_image.Source;
             if (bitmapImage != null && _image.IsMouseOver)
