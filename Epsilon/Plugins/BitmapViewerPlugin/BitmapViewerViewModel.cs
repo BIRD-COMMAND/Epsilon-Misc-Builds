@@ -4,9 +4,11 @@ using CacheEditor.TagEditing.Messages;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using TagTool.Bitmaps;
 using TagTool.Cache;
@@ -30,7 +32,11 @@ namespace BitmapViewerPlugin
         private int _bitmapIndex;
         private int _layerIndex;
         private int _mipmapLevel;
-        private BitmapSource _displayBitmap;
+        private ICacheFile _cacheFile;
+        private CachedTag _instance;
+		private Bitmap _definition;
+        private BitmapGen2 _definitionGen2;
+		private BitmapSource _displayBitmap;
         private ObservableCollection<string> _bitmaps;
         private ObservableCollection<string> _layers;
         private ObservableCollection<string> _mipmapLevels;
@@ -49,7 +55,10 @@ namespace BitmapViewerPlugin
 
 		public BitmapViewerViewModel(ICacheFile cacheFile, CachedTag instance, Bitmap definition)
         {
-            _bitmapExtractor = new BitmapExtractionHelper(cacheFile, instance, definition);
+            _cacheFile = cacheFile;
+			_instance = instance;
+			_definition = definition;
+			_bitmapExtractor = new BitmapExtractionHelper(cacheFile, instance, definition);
 
             PopulateBitmapList(definition);
             LoadBitmapInBackground();
@@ -57,7 +66,10 @@ namespace BitmapViewerPlugin
 
         public BitmapViewerViewModel(ICacheFile cacheFile, CachedTag instance, BitmapGen2 definition)
         {
-            _bitmapExtractor = new BitmapExtractionHelper(cacheFile, instance, definition);
+			_cacheFile = cacheFile;
+			_instance = instance;
+			_definitionGen2 = definition;
+			_bitmapExtractor = new BitmapExtractionHelper(cacheFile, instance, definition);
 
             PopulateBitmapList(definition);
             LoadBitmapInBackground();
@@ -201,7 +213,7 @@ namespace BitmapViewerPlugin
 
         public bool IsLoaded => _loadingState != LoadStates.Loading;
 
-        private async void LoadBitmapInBackground()
+        private async Task LoadBitmapInBackground()
         {
             _loadCancelTokenSource.Cancel();
             _loadCancelTokenSource = new CancellationTokenSource();
@@ -235,7 +247,97 @@ namespace BitmapViewerPlugin
             }
         }
 
-        private void OnBitmapLoaded(ExtractedBitmap bitmap)
+        public void SaveDisplayBitmap() {
+			BitmapSource extractedBitmap = DisplayBitmap;
+
+			string outputFolder =
+				Application.Current.Resources["BitmapPreviewSavePath"] as string
+				?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+			char[] displayNameChars = (CurrentBitmapDisplayName ?? "").ToCharArray();
+
+			for (int i = 0; i < displayNameChars.Length; i++) {
+				if (Path.GetInvalidFileNameChars().Contains(displayNameChars[i])) {
+					displayNameChars[i] = '_';
+				}
+			}
+
+            string formatSuffix = _definition.Images[BitmapIndex].Format.ToString();
+
+			string outputPath = Path.Combine(outputFolder, $"{new string(displayNameChars)}_{DateTime.Now.Ticks}_{formatSuffix}.png");
+
+			using (FileStream fileStream = new FileStream(outputPath, FileMode.Create)) {
+				BitmapEncoder encoder = new PngBitmapEncoder();
+				encoder.Frames.Add(BitmapFrame.Create(extractedBitmap));
+				encoder.Save(fileStream);
+			}
+		}
+
+        public async void ExportAllFormats() {
+
+			string originalOutputFolder =
+				Application.Current.Resources["BitmapPreviewSavePath"] as string
+				?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+			try {
+
+				// create new folder in the output directory with the name of the bitmap
+				char[] displayNameChars = (CurrentBitmapDisplayName ?? "").ToCharArray();
+
+				for (int i = 0; i < displayNameChars.Length; i++) {
+					if (Path.GetInvalidFileNameChars().Contains(displayNameChars[i])) {
+						displayNameChars[i] = '_';
+					}
+				}
+
+				string outputPath = Path.Combine(originalOutputFolder, new string(displayNameChars));
+
+                if (!Directory.Exists(outputPath))
+				    Directory.CreateDirectory(outputPath);
+
+				Application.Current.Resources["BitmapPreviewSavePath"] = outputPath;
+
+				if (_definition != null) {
+                    
+                    Bitmap originalDefinition = _definition.DeepCloneV2();
+
+                    try {
+                        for (int i = 0; i < 49; i++) {
+                            BitmapFormat current = (BitmapFormat)i;
+                            foreach (TagTool.Tags.Definitions.Bitmap.Image img in _definition.Images) {
+                                img.Format = current;
+                            }
+                            try {
+                                _cachedBaseBitmap = null;
+								_bitmapExtractor = new BitmapExtractionHelper(_cacheFile, _instance, _definition);
+								PopulateBitmapList(_definition);
+								await LoadBitmapInBackground();
+                                SaveDisplayBitmap();
+                            }
+                            catch { }
+                        }
+                    }
+                    catch { }
+					_definition = originalDefinition;
+                    try {
+                        _cachedBaseBitmap = null;
+                        _bitmapExtractor = new BitmapExtractionHelper(_cacheFile, _instance, _definition);
+                        PopulateBitmapList(_definition);
+                        await LoadBitmapInBackground();
+                    }
+                    catch { }
+				}
+				else { throw new NotImplementedException(); }
+
+			}
+			catch { }
+			Application.Current.Resources["BitmapPreviewSavePath"] = originalOutputFolder;
+
+			//_bitmapExtractor = new BitmapExtractionHelper(cacheFile, instance, definition);
+		}
+
+
+		private void OnBitmapLoaded(ExtractedBitmap bitmap)
         {
             _cachedBaseBitmap = bitmap.BaseBitmap;
 

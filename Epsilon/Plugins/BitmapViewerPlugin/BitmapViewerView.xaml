@@ -66,6 +66,7 @@
                             <Image.ContextMenu>
                                 <ContextMenu>
                                     <MenuItem Header="Save to Bitmap Previews Folder" Click="SaveBitmap_Click"/>
+                                    <MenuItem Header="Export All Formats" Click="ExportAllFormats_Click"/>
                                 </ContextMenu>
                             </Image.ContextMenu>
                         </Image>

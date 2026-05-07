@@ -30,28 +30,20 @@ namespace BitmapViewerPlugin
             if (viewModel?.DisplayBitmap == null) {
                 return;
             }
-				
-			BitmapSource extractedBitmap = viewModel.DisplayBitmap;
 
-			string outputFolder = 
-                Application.Current.Resources["BitmapPreviewSavePath"] as string 
-                ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            viewModel.SaveDisplayBitmap();
 
-            char[] displayNameChars = (viewModel?.CurrentBitmapDisplayName ?? "").ToCharArray();
+		}
 
-            for (int i = 0; i < displayNameChars.Length; i++) {
-				if (Path.GetInvalidFileNameChars().Contains(displayNameChars[i])) {
-					displayNameChars[i] = '_';
-				}
-			}
+        private void ExportAllFormats_Click(object sender, RoutedEventArgs e) {
+            
+                BitmapViewerViewModel viewModel = DataContext as BitmapViewerViewModel;
+            
+			    if (viewModel?.DisplayBitmap == null) {
+				    return;
+			    }
 
-			string outputPath = Path.Combine(outputFolder, $"{new string(displayNameChars)}_{DateTime.Now.Ticks}.png");
-
-			using (FileStream fileStream = new FileStream(outputPath, FileMode.Create)) {
-				BitmapEncoder encoder = new PngBitmapEncoder();
-				encoder.Frames.Add(BitmapFrame.Create(extractedBitmap));
-				encoder.Save(fileStream);
-			}
+			    viewModel.ExportAllFormats();
 
 		}
 
