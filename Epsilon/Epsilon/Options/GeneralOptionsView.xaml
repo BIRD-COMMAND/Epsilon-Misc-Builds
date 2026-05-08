@@ -149,6 +149,46 @@
                 TextWrapping="NoWrap"/>
         </DockPanel>
 
+        <!-- Bitmap Preview Save Path -->
+        <DockPanel>
+            <TextBlock
+        VerticalAlignment="Center"
+        Text="Bitmap Preview Save Path"
+        ToolTip="Bitmap previews will be saved to this location." />
+            <Button
+        Name="BitmapPreviewSaveButton"
+        DockPanel.Dock="Right"
+        Style="{StaticResource BrowseButtonStyle}"
+        ToolTip="Browse for a bitmap preview save location"
+        Click="BrowseFolderButtonClicked">
+                <Image
+            SnapsToDevicePixels="True"
+            Source="{StaticResource FolderClosed}"/>
+            </Button>
+            <Button
+        Name="BitmapPreviewSaveClear"
+        DockPanel.Dock="Right"
+        Style="{StaticResource BrowseButtonStyle}"
+        Visibility="{Binding BitmapPreviewSavePath, Converter={converters:StringVisibilityConverter}}"
+        ToolTip="Clear startup tags"
+        Click="ClearFileClicked">
+                <TextBlock
+            Text="✖"
+            Foreground="#70FF2222"/>
+            </Button>
+            <TextBlock
+        x:Name="BitmapPreviewSaveTextBlock"
+        TextAlignment="Right"
+        Margin="0,0,4,0"
+        Opacity="0.6"
+        FontSize="11"
+        Visibility="{Binding BitmapPreviewSavePath, Converter={converters:StringVisibilityConverter}}"
+        ToolTip="{Binding BitmapPreviewSavePath, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, Mode=TwoWay}"
+        Text="{Binding BitmapPreviewSavePath}"
+        VerticalAlignment="Center"
+        TextWrapping="NoWrap"/>
+        </DockPanel>
+
         <!-- Startup Window Location -->
         <DockPanel>
             <TextBlock

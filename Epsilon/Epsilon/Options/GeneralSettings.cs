@@ -8,7 +8,8 @@ namespace Epsilon.Options
 
         public static SettingDefinition DefaultTagCacheSetting = new SettingDefinition("DefaultTagCache", "");
         public static SettingDefinition DefaultPakSetting = new SettingDefinition("DefaultModPackage", "");
-        public static SettingDefinition StartupPositionLeftSetting = new SettingDefinition("StartupPositionLeft", "");
+        public static SettingDefinition BitmapPreviewSavePathSetting = new SettingDefinition("BitmapPreviewSavePath", "");
+		public static SettingDefinition StartupPositionLeftSetting = new SettingDefinition("StartupPositionLeft", "");
         public static SettingDefinition StartupPositionTopSetting = new SettingDefinition("StartupPositionTop", "");
         public static SettingDefinition StartupWidthSetting = new SettingDefinition("StartupWidth", "");
         public static SettingDefinition StartupHeightSetting = new SettingDefinition("StartupHeight", "");

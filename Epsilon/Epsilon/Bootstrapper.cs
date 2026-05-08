@@ -29,7 +29,7 @@ namespace WpfApp20
         private ISettingsCollection _settings;
         private string DefaultCachePath;
         private string DefaultPakPath;
-        private double StartupPositionLeft;
+		private double StartupPositionLeft;
         private double StartupPositionTop;
         private double StartupWidth;
         private double StartupHeight;
@@ -104,7 +104,7 @@ namespace WpfApp20
             _settings = GetInstance<ISettingsService>().GetCollection("General");
             DefaultCachePath = _settings.Get("DefaultTagCache", "");
             DefaultPakPath = _settings.Get("DefaultModPackage", "");
-            AlwaysOnTop = _settings.Get("AlwaysOnTop", false);
+			AlwaysOnTop = _settings.Get("AlwaysOnTop", false);
             AccentColor = _settings.Get("AccentColor", "#007ACC");
             Theme = _settings.Get("Theme", Theme.Default);
             bool useNativeTitleBar = _settings.Get("UseNativeTitleBar", false);
@@ -114,7 +114,8 @@ namespace WpfApp20
             App.Current.Resources.Add(SystemParameters.MenuPopupAnimationKey, PopupAnimation.None);
             App.Current.Resources["AlwaysOnTop"] = AlwaysOnTop;
             App.Current.Resources["UseNativeTitleBar"] = useNativeTitleBar;
-        }
+            App.Current.Resources["BitmapPreviewSavePath"] = _settings.Get("BitmapPreviewSavePath", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+		}
 
         private void PostLaunchInitShell()
         {

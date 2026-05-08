@@ -29,7 +29,7 @@ namespace Epsilon.Options
                     textBlock = DefaultModPackageTextBlock;
                     filter = "Mod Package (*.pak)|*.pak";
                     break;
-                default:
+				default:
                     break;
             }
 
@@ -48,7 +48,29 @@ namespace Epsilon.Options
             textBlock.ToolTip = dialog.FileName;
         }
 
-        private void ClearFileClicked(object sender, System.Windows.RoutedEventArgs e)
+        private void BrowseFolderButtonClicked(object sender, System.Windows.RoutedEventArgs e) {
+            
+            TextBlock textBlock = new TextBlock();
+            
+            switch (( (Button)sender ).Name) {
+                case "BitmapPreviewSaveButton":
+                    textBlock = BitmapPreviewSaveTextBlock;
+                    break;
+            }
+
+			var dialog = new OpenFolderDialog();
+			
+            if (!string.IsNullOrEmpty((string)textBlock.ToolTip))
+				dialog.InitialDirectory = (string)textBlock.ToolTip;
+			if (dialog.ShowDialog() == false)
+				return;
+
+			textBlock.ToolTip = dialog.FolderName;
+
+		}
+
+
+		private void ClearFileClicked(object sender, System.Windows.RoutedEventArgs e)
         {
             TextBlock textBlock = new TextBlock();
 
@@ -60,7 +82,10 @@ namespace Epsilon.Options
                 case "DefaultPakClear":
                     textBlock = DefaultModPackageTextBlock;
                     break;
-                default:
+                case "BitmapPreviewSaveClear":
+                    textBlock = BitmapPreviewSaveTextBlock;
+                    break;
+				default:
                     break;
             }
 
