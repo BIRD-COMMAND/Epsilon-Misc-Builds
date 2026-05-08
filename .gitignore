@@ -360,3 +360,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/.claude
+/Donor
+/dump
+ep-misc_builds_readme.md
