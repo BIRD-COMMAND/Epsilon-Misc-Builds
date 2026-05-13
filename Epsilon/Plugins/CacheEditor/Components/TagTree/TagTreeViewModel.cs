@@ -41,6 +41,8 @@ namespace CacheEditor.Components.TagTree
         ICommandHandler<ExportModeJMSCommand>,
         ICommandHandler<ExportCollJMSCommand>,
         ICommandHandler<ExportPhmoJMSCommand>,
+        ICommandHandler<ExtractAllModelsCommand>,
+        ICommandHandler<ExportAssCommand>,
         ICommandHandler<ExtractSoundCommand>,
         IDisposable
 
@@ -375,6 +377,28 @@ namespace CacheEditor.Components.TagTree
                 else
                     command.IsVisible = false;
             }
+        }
+
+        void ICommandHandler<ExtractAllModelsCommand>.ExecuteCommand(Command command)
+        {
+            if (SelectedNode?.Tag is CachedTag tag)
+                _extraction.ExtractAllModelJms(_cacheFile.Cache, tag);
+        }
+
+        void ICommandHandler<ExtractAllModelsCommand>.UpdateCommand(Command command)
+        {
+            command.IsVisible = SelectedNode?.Tag is CachedTag tag && tag.IsInGroup("hlmt");
+        }
+
+        void ICommandHandler<ExportAssCommand>.ExecuteCommand(Command command)
+        {
+            if (SelectedNode?.Tag is CachedTag tag)
+                _extraction.ExportScenarioBspAss(_cacheFile.Cache, tag);
+        }
+
+        void ICommandHandler<ExportAssCommand>.UpdateCommand(Command command)
+        {
+            command.IsVisible = SelectedNode?.Tag is CachedTag tag && tag.IsInGroup("sbsp");
         }
 
         void ICommandHandler<ExtractSoundCommand>.ExecuteCommand(Command command)

@@ -57,6 +57,10 @@ namespace CacheEditor.Components.TagExplorer
         [ExportMenuItem]
         public static MenuItemDefinition ExportPhmoJMSMenuItem = new CommandMenuItemDefinition<ExportPhmoJMSCommand>(ContextMenu, ExtractImportMenuItemGroup);
         [ExportMenuItem]
+        public static MenuItemDefinition ExtractAllModelsMenuItem = new CommandMenuItemDefinition<ExtractAllModelsCommand>(ContextMenu, ExtractImportMenuItemGroup);
+        [ExportMenuItem]
+        public static MenuItemDefinition ExportAssMenuItem = new CommandMenuItemDefinition<ExportAssCommand>(ContextMenu, ExtractImportMenuItemGroup);
+        [ExportMenuItem]
         public static MenuItemDefinition ExtractSoundMenuItem = new CommandMenuItemDefinition<ExtractSoundCommand>(ContextMenu, ExtractImportMenuItemGroup);
         [ExportMenuItem]
         public static MenuItemDefinition ExtractTagMenuItem = new CommandMenuItemDefinition<ExtractTagCommand>(ContextMenu, ExtractImportMenuItemGroup);

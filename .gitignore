@@ -364,3 +364,10 @@ FodyWeavers.xsd
 /Donor
 /dump
 ep-misc_builds_readme.md
+/blam-tags
+AGENTS.md
+(stream, tag);
+0) {
+/bird
+/Halo 4 (Sep 27, 2011) \[07745.11.09.27.1746.horse\] \[Tags Build\] \[Fragged Tag XEXs - tag_debug and tag_test Works\]
+tagtool_work.txt
